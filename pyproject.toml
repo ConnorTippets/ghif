@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ghif"
+version = "0.0.1"
+description = "Library for generating mappings from function to url in GitHub python repo."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "GPL-2.0-only"
+authors = [{ name = "Connor Tippets" }]
+
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/ConnorTippets/ghif"
+
+[tool.setuptools.packages.find]
+where = ["src"]
