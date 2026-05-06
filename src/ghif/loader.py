@@ -1,4 +1,6 @@
 import requests
+from .tree import GitHubTreeBuilder
+from pprint import pprint as print
 
 
 class GitHubLoader:
@@ -32,4 +34,4 @@ class GitHubLoader:
             + f"/git/trees/{branch}{(":" + sub_dir.strip("/")) if sub_dir else ""}?recursive=1",
             headers=self._get_headers(),
         )
-        print(response.json())
+        print(GitHubTreeBuilder().build(repo_raw, sub_dir or "/", response.json()))
