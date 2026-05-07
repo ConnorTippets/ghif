@@ -2,14 +2,14 @@ from .tree import GitHubTreeBuilder, GitHubDirectory, GitHubFile
 from .parser import GitHubSourceParser
 from .client import GitHubClient
 
-# from pprint import pprint as print
-
 
 class GitHubLoader:
     def __init__(self):
         self._client = GitHubClient()
 
-    def load(self, repo_url: str, branch: str, sub_dir: str | None = None):
+    def load(
+        self, repo_url: str, branch: str, sub_dir: str | None = None
+    ) -> list[list[str | int]]:
         tree = self._fetch_tree(repo_url, branch, sub_dir)
         parser = GitHubSourceParser(self._client)
 
@@ -29,10 +29,7 @@ class GitHubLoader:
                 print(f"Parsing file {sub_dir}/{file.path}")
                 parser.build(file)
 
-        with open("output.json", "w") as handle:
-            import json
-
-            handle.write(json.dumps(parser.get_collected(), indent=4))
+        return parser.get_collected()
 
     def _fetch_tree(
         self, repo_url: str, branch: str, sub_dir: str | None = None
