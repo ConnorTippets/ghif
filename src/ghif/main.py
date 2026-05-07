@@ -4,7 +4,7 @@ _loader = GitHubLoader()
 
 
 def config(api_key: str):
-    _loader._api_key = api_key
+    _loader._client._api_key = api_key
 
 
 def load(repo_url: str, branch: str, file: str, sub_dir: str | None = None):
