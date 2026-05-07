@@ -9,15 +9,30 @@ class GitHubLoader:
     def __init__(self):
         self._client = GitHubClient()
 
-    def load(self, repo_url: str, branch: str, file: str, sub_dir: str | None = None):
+    def load(self, repo_url: str, branch: str, sub_dir: str | None = None):
         tree = self._fetch_tree(repo_url, branch, sub_dir)
-        path = file.replace("\\", "/").strip("/")
+        parser = GitHubSourceParser(self._client)
 
-        file_obj = tree.find(path)
-        if not file_obj:
-            raise Exception(f"Couldn't find `{file}` in repo!")
+        known_packages: list[str] = []
+        for dir in tree.walk_dirs():
+            if any(
+                file.path.endswith("__init__.py")
+                for file in dir.files
+                if isinstance(file, GitHubFile)
+            ):
+                known_packages.append("" if dir == tree else dir.path)
 
-        GitHubSourceParser(self._client).build(tree, file_obj)
+        for file in tree.walk_files():
+            if file.path.endswith(".py") and any(
+                file.path.startswith(dir_path) for dir_path in known_packages
+            ):
+                print(f"Parsing file {sub_dir}/{file.path}")
+                parser.build(file)
+
+        with open("output.json", "w") as handle:
+            import json
+
+            handle.write(json.dumps(parser.get_collected(), indent=4))
 
     def _fetch_tree(
         self, repo_url: str, branch: str, sub_dir: str | None = None

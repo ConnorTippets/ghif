@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import cached_property
+from typing import Iterator
 
 
 @dataclass
@@ -28,6 +29,20 @@ class GitHubDirectory:
                 return file.find(path)
 
         return None
+
+    def walk_files(self) -> Iterator[GitHubFile]:
+        for file in self.files:
+            if isinstance(file, GitHubFile):
+                yield file
+            elif isinstance(file, GitHubDirectory):
+                yield from file.walk_files()
+
+    def walk_dirs(self) -> Iterator[GitHubDirectory]:
+        yield self
+        for file in self.files:
+            if isinstance(file, GitHubDirectory):
+                yield file
+                yield from file.walk_dirs()
 
 
 class GitHubTreeBuilder:
