@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import cached_property
 
 
 @dataclass
@@ -7,7 +8,7 @@ class GitHubFile:
     sha: str
     repo: str
 
-    @property
+    @cached_property
     def url(self):
         return f"https://api.github.com/repos/{self.repo}/git/blobs/{self.sha}"
 
@@ -18,6 +19,15 @@ class GitHubDirectory:
     sha: str
     repo: str
     files: "list[GitHubFile | GitHubDirectory]"
+
+    def find(self, path: str) -> GitHubFile | None:
+        for file in self.files:
+            if isinstance(file, GitHubFile) and file.path == path:
+                return file
+            elif isinstance(file, GitHubDirectory) and path.startswith(file.path):
+                return file.find(path)
+
+        return None
 
 
 class GitHubTreeBuilder:

@@ -11,4 +11,6 @@ with open("token.txt", "r") as handle:
     token = handle.read().strip()
 
 src.ghif.config(token)
-src.ghif.load("https://github.com/ConnorTippets/gameboy-color", "main")  # , "src")
+src.ghif.load(
+    "https://github.com/Rapptz/discord.py/", "master", "discord/ext/commands/cog.py"
+)

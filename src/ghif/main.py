@@ -7,8 +7,8 @@ def config(api_key: str):
     _loader._api_key = api_key
 
 
-def load(repo_url: str, branch: str, sub_dir: str | None = None):
+def load(repo_url: str, branch: str, file: str, sub_dir: str | None = None):
     """
     Load module from github repo given a branch. Optionally supply a subdirectory if the module is not toplevel.
     """
-    return _loader.load(repo_url, branch, sub_dir)
+    return _loader.load(repo_url, branch, file, sub_dir)
