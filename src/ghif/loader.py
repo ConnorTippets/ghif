@@ -26,7 +26,6 @@ class GitHubLoader:
             if file.path.endswith(".py") and any(
                 file.path.startswith(dir_path) for dir_path in known_packages
             ):
-                print(f"Parsing file {sub_dir}/{file.path}")
                 parser.build(file)
 
         return parser.get_collected()
