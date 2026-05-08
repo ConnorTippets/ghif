@@ -14,3 +14,8 @@ src.ghif.config(token)
 mapping: list[list[str | int]] = src.ghif.load(
     "https://github.com/Rapptz/discord.py/", "master", "discord"
 )
+
+import json
+
+with open("output.json", "w") as handle:
+    json.dump(mapping, handle, indent=4)

@@ -6,12 +6,26 @@ _collected: list[list[str | int]] = []
 
 
 class GitHubSourceWalker(ast.NodeVisitor):
-    def __init__(self, file_path: str):
+    def __init__(self, file: GitHubFile):
         self.path = ""
-        self.file_path = file_path
+        self.file_path = file.path
+        self.file_sha = file.sha
         super().__init__()
 
     def visit_ClassDef(self, node: ast.ClassDef):
+        if not node.end_lineno:
+            raise Exception("ast.ClassDef.end_lineno is null! Investigate this!")
+
+        _collected.append(
+            [
+                f"{self.path}{node.name}",
+                self.file_path,
+                self.file_sha,
+                node.lineno,
+                node.end_lineno,
+            ],
+        )
+
         orig_path = self.path
         self.path = f"{self.path}{node.name}."
         for child in node.body:
@@ -28,6 +42,7 @@ class GitHubSourceWalker(ast.NodeVisitor):
             [
                 f"{self.path}{node.name}",
                 self.file_path,
+                self.file_sha,
                 node.lineno,
                 node.end_lineno,
             ],
@@ -44,7 +59,7 @@ class GitHubSourceParser:
 
     def build(self, file: GitHubFile):
         root = ast.parse(self._client._fetch(file))
-        walker = GitHubSourceWalker(file.path)
+        walker = GitHubSourceWalker(file)
         walker.visit(root)
 
     def get_collected(self):
