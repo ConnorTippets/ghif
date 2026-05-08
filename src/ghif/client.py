@@ -1,6 +1,7 @@
 import codecs
 import requests
 from .tree import GitHubFile
+import httpx
 
 
 class GitHubClient:
@@ -11,14 +12,16 @@ class GitHubClient:
         self._api_key = ""
         self._session = requests.Session()
 
-    def _fetch(self, file: GitHubFile) -> bytes:
+    async def _fetch(
+        self, client: httpx.AsyncClient, file: GitHubFile
+    ) -> tuple[GitHubFile, bytes]:
         repo_api_url = f"https://api.github.com/repos/{file.repo}"
-        response = self._session.get(
+        response = await client.get(
             repo_api_url + f"/git/blobs/{file.sha}",
             headers=self._get_headers(),
         )
 
-        return codecs.decode(
+        return file, codecs.decode(
             response.json()["content"].encode("utf-8"),
             "base64",
         )

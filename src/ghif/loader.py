@@ -1,13 +1,15 @@
 from .tree import GitHubTreeBuilder, GitHubDirectory, GitHubFile
 from .parser import GitHubSourceParser
 from .client import GitHubClient
+import httpx
+import asyncio
 
 
 class GitHubLoader:
     def __init__(self):
         self._client = GitHubClient()
 
-    def load(
+    async def load(
         self, repo_url: str, branch: str, sub_dir: str | None = None
     ) -> list[dict[str, str | int]]:
         tree = self._fetch_tree(repo_url, branch, sub_dir)
@@ -22,11 +24,21 @@ class GitHubLoader:
             ):
                 known_packages.append("" if dir == tree else dir.path)
 
+        files: list[GitHubFile] = []
         for file in tree.walk_files():
             if file.path.endswith(".py") and any(
                 file.path.startswith(dir_path) for dir_path in known_packages
             ):
-                parser.build(file)
+                files.append(file)
+
+        fetched: list[tuple[GitHubFile, bytes]] = []
+        async with httpx.AsyncClient() as client:
+            tasks = [self._client._fetch(client, file) for file in files]
+
+            fetched = await asyncio.gather(*tasks)
+
+        for file, source in fetched:
+            parser.build(file, source.decode("utf-8"))
 
         return parser.get_collected()
 

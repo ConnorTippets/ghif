@@ -57,8 +57,8 @@ class GitHubSourceParser:
         self._client = client
         _collected.clear()
 
-    def build(self, file: GitHubFile):
-        root = ast.parse(self._client._fetch(file))
+    def build(self, file: GitHubFile, source: str):
+        root = ast.parse(source)
         walker = GitHubSourceWalker(file)
         walker.visit(root)
 
