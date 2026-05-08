@@ -9,7 +9,7 @@ class GitHubLoader:
 
     def load(
         self, repo_url: str, branch: str, sub_dir: str | None = None
-    ) -> list[list[str | int]]:
+    ) -> list[dict[str, str | int]]:
         tree = self._fetch_tree(repo_url, branch, sub_dir)
         parser = GitHubSourceParser(self._client)
 

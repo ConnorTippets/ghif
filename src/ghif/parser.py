@@ -2,7 +2,7 @@ import ast
 from .tree import GitHubFile
 from .client import GitHubClient
 
-_collected: list[list[str | int]] = []
+_collected: list[dict[str, str | int]] = []
 
 
 class GitHubSourceWalker(ast.NodeVisitor):
@@ -17,13 +17,13 @@ class GitHubSourceWalker(ast.NodeVisitor):
             raise Exception("ast.ClassDef.end_lineno is null! Investigate this!")
 
         _collected.append(
-            [
-                f"{self.path}{node.name}",
-                self.file_path,
-                self.file_sha,
-                node.lineno,
-                node.end_lineno,
-            ],
+            {
+                "func": f"{self.path}{node.name}",
+                "file": self.file_path,
+                "sha": self.file_sha,
+                "lineno": node.lineno,
+                "end_lineno": node.end_lineno,
+            },
         )
 
         orig_path = self.path
@@ -39,13 +39,13 @@ class GitHubSourceWalker(ast.NodeVisitor):
             )
 
         _collected.append(
-            [
-                f"{self.path}{node.name}",
-                self.file_path,
-                self.file_sha,
-                node.lineno,
-                node.end_lineno,
-            ],
+            {
+                "func": f"{self.path}{node.name}",
+                "file": self.file_path,
+                "sha": self.file_sha,
+                "lineno": node.lineno,
+                "end_lineno": node.end_lineno,
+            },
         )
 
     visit_FunctionDef = visit_function

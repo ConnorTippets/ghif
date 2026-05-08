@@ -11,7 +11,7 @@ with open("token.txt", "r") as handle:
     token = handle.read().strip()
 
 src.ghif.config(token)
-mapping: list[list[str | int]] = src.ghif.load(
+mapping: list[dict[str, str | int]] = src.ghif.load(
     "https://github.com/Rapptz/discord.py/", "master", "discord"
 )
 

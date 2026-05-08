@@ -9,7 +9,7 @@ def config(api_key: str):
 
 def load(
     repo_url: str, branch: str, sub_dir: str | None = None
-) -> list[list[str | int]]:
+) -> list[dict[str, str | int]]:
     """
     Load module from github repo given a branch. Optionally supply a subdirectory if the module is not toplevel.
     """
