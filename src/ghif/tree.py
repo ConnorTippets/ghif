@@ -46,10 +46,9 @@ class GitHubDirectory:
 
 
 class GitHubTreeBuilder:
-    def _build_dir(self, repo: str, path: str, tree: list):
+    def _build_dir(self, repo: str, path: str, tree: list, i: int):
         files = []
 
-        i = 0
         while i < len(tree):
             file = tree[i]
             if not file["path"].startswith(path):
@@ -58,13 +57,11 @@ class GitHubTreeBuilder:
                 files.append(GitHubFile(file["path"], file["sha"], repo))
                 i += 1
             elif file["type"] == "tree":
-                inner_files, offset = self._build_dir(
-                    repo, file["path"], tree[(i + 1) :]
-                )
+                inner_files, new_i = self._build_dir(repo, file["path"], tree, i + 1)
                 files.append(
                     GitHubDirectory(file["path"], file["sha"], repo, inner_files)
                 )
-                i += offset + 1
+                i = new_i
             else:
                 raise Exception(f"Unknown file type! {file["type"]}")
 
@@ -81,13 +78,11 @@ class GitHubTreeBuilder:
                 root.files.append(GitHubFile(file["path"], file["sha"], repo))
                 i += 1
             elif file["type"] == "tree":
-                files, offset = self._build_dir(
-                    repo, file["path"], response["tree"][(i + 1) :]
-                )
+                files, new_i = self._build_dir(repo, file["path"], tree, i + 1)
                 root.files.append(
                     GitHubDirectory(file["path"], file["sha"], repo, files)
                 )
-                i += offset + 1
+                i = new_i
             else:
                 raise Exception(f"Unknown file type! {file["type"]}")
 
