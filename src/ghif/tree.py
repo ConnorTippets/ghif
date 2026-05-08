@@ -37,7 +37,7 @@ class GitHubDirectory:
             elif isinstance(file, GitHubDirectory):
                 yield from file.walk_files()
 
-    def walk_dirs(self) -> Iterator[GitHubDirectory]:
+    def walk_dirs(self) -> "Iterator[GitHubDirectory]":
         yield self
         for file in self.files:
             if isinstance(file, GitHubDirectory):
